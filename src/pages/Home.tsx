@@ -1,6 +1,6 @@
 import HabitListItem from '../components/HabitListItem';
-import { useState } from 'react';
-import { Habit, getHabits } from '../data/habits';
+import {useState} from 'react';
+import {getHabits, Habit} from '../data/habits';
 import {
   IonContent,
   IonHeader,
@@ -18,8 +18,8 @@ const Home: React.FC = () => {
 
   const [habits, setHabits] = useState<Habit[]>([]);
 
-  useIonViewWillEnter(() => {
-    const hbts = getHabits();
+  useIonViewWillEnter( async() => {
+    const hbts = await getHabits();
     setHabits(hbts);
   });
 
@@ -30,7 +30,7 @@ const Home: React.FC = () => {
   };
 
   return (
-    <IonPage id="home-page">
+    <IonPage id="home-page" color="primary">
       <IonHeader>
         <IonToolbar>
           <IonTitle>Habits</IonTitle>
@@ -52,6 +52,7 @@ const Home: React.FC = () => {
         <IonList>
           {habits.map(h => <HabitListItem key={h.id} habit={h} />)}
         </IonList>
+
       </IonContent>
     </IonPage>
   );

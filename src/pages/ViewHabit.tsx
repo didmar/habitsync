@@ -1,7 +1,9 @@
+/**
+ * View the details for the selected habit
+ */
 import { useState } from 'react';
 import { Habit, getHabit } from '../data/habits';
 import {
-  IonCheckbox,
   IonBackButton,
   IonButtons,
   IonContent,
@@ -14,7 +16,6 @@ import {
   IonToolbar,
   useIonViewWillEnter,
 } from '@ionic/react';
-import { addCircle } from 'ionicons/icons';
 import { useParams } from 'react-router';
 import './ViewHabit.css';
 
@@ -22,8 +23,8 @@ function ViewHabit() {
   const [habit, setHabit] = useState<Habit>();
   const params = useParams<{ id: string }>();
 
-  useIonViewWillEnter(() => {
-    const msg = getHabit(parseInt(params.id, 10));
+  useIonViewWillEnter(async () => {
+    const msg = await getHabit(params.id);
     setHabit(msg);
   });
 
