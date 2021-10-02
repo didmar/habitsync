@@ -1,6 +1,6 @@
-import MessageListItem from '../components/MessageListItem';
+import HabitListItem from '../components/HabitListItem';
 import { useState } from 'react';
-import { Message, getMessages } from '../data/messages';
+import { Habit, getHabits } from '../data/habits';
 import {
   IonContent,
   IonHeader,
@@ -16,11 +16,11 @@ import './Home.css';
 
 const Home: React.FC = () => {
 
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [habits, setHabits] = useState<Habit[]>([]);
 
   useIonViewWillEnter(() => {
-    const msgs = getMessages();
-    setMessages(msgs);
+    const hbts = getHabits();
+    setHabits(hbts);
   });
 
   const refresh = (e: CustomEvent) => {
@@ -33,7 +33,7 @@ const Home: React.FC = () => {
     <IonPage id="home-page">
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Inbox</IonTitle>
+          <IonTitle>Habits</IonTitle>
         </IonToolbar>
       </IonHeader>
       <IonContent fullscreen>
@@ -44,13 +44,13 @@ const Home: React.FC = () => {
         <IonHeader collapse="condense">
           <IonToolbar>
             <IonTitle size="large">
-              Inbox
+              Home
             </IonTitle>
           </IonToolbar>
         </IonHeader>
 
         <IonList>
-          {messages.map(m => <MessageListItem key={m.id} message={m} />)}
+          {habits.map(h => <HabitListItem key={h.id} habit={h} />)}
         </IonList>
       </IonContent>
     </IonPage>
