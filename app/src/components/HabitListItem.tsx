@@ -8,6 +8,9 @@ interface HabitListItemProps {
 }
 
 const HabitListItem: React.FC<HabitListItemProps> = ({ habit }) => {
+  /**
+   * Renders one habit from the list
+   */
   return (
     <div>
         <IonCheckbox checked={habit.checked} onIonChange={e => updateChecked(habit.id, e.detail.checked)}/>

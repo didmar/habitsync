@@ -8,11 +8,13 @@
 // You can also remove this file if you'd prefer not to use a
 // service worker, and the Workbox build step will be skipped.
 
-import { clientsClaim } from 'workbox-core';
-import { ExpirationPlugin } from 'workbox-expiration';
-import { precacheAndRoute, createHandlerBoundToURL } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
-import { StaleWhileRevalidate } from 'workbox-strategies';
+import {clientsClaim} from 'workbox-core';
+import {ExpirationPlugin} from 'workbox-expiration';
+import {createHandlerBoundToURL, precacheAndRoute} from 'workbox-precaching';
+import {registerRoute} from 'workbox-routing';
+import {NetworkOnly, StaleWhileRevalidate} from 'workbox-strategies';
+import {BackgroundSyncPlugin} from 'workbox-background-sync';
+
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -78,3 +80,15 @@ self.addEventListener('message', (event) => {
 });
 
 // Any other custom service worker logic can go here.
+
+const bgSyncPlugin = new BackgroundSyncPlugin('myQueueName', {
+    maxRetentionTime: 24 * 60 // Retry for max of 24 Hours (specified in minutes)
+});
+
+registerRoute(
+    /.*/,
+    new NetworkOnly({
+        plugins: [bgSyncPlugin]
+    }),
+    'PUT'
+);

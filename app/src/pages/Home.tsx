@@ -18,9 +18,11 @@ const Home: React.FC = () => {
 
   const [habits, setHabits] = useState<Habit[]>([]);
 
-  useIonViewWillEnter( async() => {
-    const hbts = await getHabits();
-    setHabits(hbts);
+  useIonViewWillEnter( async () => {
+    const hs = await getHabits()
+    if(hs != undefined) {
+      setHabits(hs);
+    }
   });
 
   const refresh = (e: CustomEvent) => {
