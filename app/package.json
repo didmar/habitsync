@@ -46,7 +46,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "run": "serve -s build"
+    "dev": "ionic serve --external",
+    "prod": "serve -s build"
   },
   "eslintConfig": {
     "extends": [

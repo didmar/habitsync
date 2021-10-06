@@ -1,7 +1,8 @@
 import {AxiosResponse} from "axios";
 
 const axios = require('axios').default;
-axios.defaults.baseURL = 'http://192.168.0.28:3000';
+// axios.defaults.baseURL = 'http://192.168.0.28:3000';
+axios.defaults.baseURL = 'http://127.0.0.1:3000';
 
 export class Habit {
   id: string;
