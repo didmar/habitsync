@@ -1,4 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, BaseEntity } from "typeorm";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, OneToMany, JoinColumn} from "typeorm";
+import { Measure } from "./Measure"
 
 @Entity()
 export class Habit extends BaseEntity {
@@ -8,8 +9,4 @@ export class Habit extends BaseEntity {
 
     @Column()
     description: string;
-
-    @Column()
-    checked: boolean;
-
 }

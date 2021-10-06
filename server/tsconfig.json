@@ -10,7 +10,10 @@
     "forceConsistentCasingInFileNames": true,
     // For typeorm
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true
+    "experimentalDecorators": true,
+    "sourceMap": true,
+    "noImplicitReturns": false,
+    "strictPropertyInitialization": false
   },
   "$schema": "https://json.schemastore.org/tsconfig",
   "display": "Recommended",
