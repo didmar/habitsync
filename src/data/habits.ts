@@ -54,10 +54,9 @@ export async function getHabit(id: string): Promise<Habit | undefined> {
   }
 }
 
-export async function updateChecked(measure: Measure, checked: boolean) {
-  console.log("Updating habit " + measure.habitId + " to: " +checked)
+export async function updateValue(measure: Measure, value: number) {
+  console.log("Updating habit " + measure.habitId + " to: " + value)
   const measureRef = doc(db, 'habits', measure.habitId, 'measures', measure.day);
-  const value = checked ? 1 : 0
   setDoc(measureRef, {day: measure.day, value: value}, { merge: true });
 }
 
@@ -67,8 +66,6 @@ export async function getMeasure(habitId: string, date: Date): Promise<Measure> 
   const measureSnap = await getDoc(measureRef)
   if (measureSnap.exists()) {
     const measureData = measureSnap.data()
-    console.log("Get measure with value:")
-    console.log(measureData.value)
     return new Measure(habitId, measureData.day, measureData.value)
   } else {
     return new Measure(habitId, strDay, undefined)
