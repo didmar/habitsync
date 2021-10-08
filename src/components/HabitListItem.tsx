@@ -31,7 +31,7 @@ const HabitListItem: React.FunctionComponent<HabitListItemProps> = ({habit, date
                         <IonLabel>{habit.description}</IonLabel>
                     </IonButton>
                 </IonCol>
-                {measures.map(m => <MeasureInput measure={m}/>)}
+                {measures.map(m => <MeasureInput measureType={habit.measureType} measure={m}/>)}
             </IonRow>
         </>
     );

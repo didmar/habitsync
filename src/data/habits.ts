@@ -10,13 +10,20 @@ import firebaseApp from "../Firebase";
 
 const db = getFirestore(firebaseApp)
 
+export enum MeasureType {
+  binary = "binary",
+  quanti = "quanti",
+}
+
 export class Habit {
   id: string;
   description: string;
+  measureType: MeasureType
 
-  constructor (id: string, description: string) {
+  constructor (id: string, description: string, measureType: MeasureType) {
     this.id = id;
     this.description = description;
+    this.measureType = measureType;
   }
 }
 
@@ -38,7 +45,7 @@ export async function getHabits(): Promise<Habit[]> {
   const habitsSnapshot = await getDocs(habitsCol);
   const habitsList = habitsSnapshot.docs.map(doc => {
     const data = doc.data();
-    return new Habit(doc.id, data.description);
+    return new Habit(doc.id, data.description, data.measureType);
   });
   return habitsList;
 }
@@ -48,7 +55,7 @@ export async function getHabit(id: string): Promise<Habit | undefined> {
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     const data = docSnap.data();
-    return new Habit(id, data.description);
+    return new Habit(id, data.description, data.measureType);
   } else {
     return undefined;
   }
