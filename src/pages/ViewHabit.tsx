@@ -1,27 +1,32 @@
 /**
  * View the details for the selected habit
  */
-import { useState } from 'react';
-import { Habit, getHabit } from '../data/habits';
+import React, {useState} from 'react';
+import {deleteHabit, getHabit, Habit} from '../data/habits';
 import {
-  IonBackButton,
-  IonButtons,
-  IonContent,
-  IonHeader,
-  IonIcon,
-  IonItem,
-  IonLabel,
-  IonNote,
-  IonPage,
-  IonToolbar,
-  useIonViewWillEnter,
+    IonBackButton,
+    IonButton,
+    IonButtons,
+    IonContent,
+    IonHeader,
+    IonIcon,
+    IonItem,
+    IonLabel,
+    IonPage,
+    IonTitle,
+    IonToolbar,
+    useIonRouter,
+    useIonViewWillEnter,
 } from '@ionic/react';
-import { useParams } from 'react-router';
+import {useParams} from 'react-router';
 import './ViewHabit.css';
+import {create, trash} from "ionicons/icons";
 
 function ViewHabit() {
-  const [habit, setHabit] = useState<Habit>();
   const params = useParams<{ id: string }>();
+  const [habit, setHabit] = useState<Habit | undefined | null>(null);
+
+  const router = useIonRouter();
 
   useIonViewWillEnter(async () => {
     const msg = await getHabit(params.id);
@@ -32,9 +37,22 @@ function ViewHabit() {
     <IonPage id="view-habit-page">
       <IonHeader translucent>
         <IonToolbar>
+          <IonTitle>{habit ? habit.description : ""}</IonTitle>
           <IonButtons slot="start">
-            <IonBackButton text="Home" defaultHref="/home"></IonBackButton>
+            <IonBackButton defaultHref="/home"></IonBackButton>
           </IonButtons>
+          {habit && (
+          <IonButtons slot="end">
+            <IonButton onClick={ e => console.log(e) }>
+              <IonIcon icon={create}/>
+            </IonButton>
+            <IonButton onClick={ e => {
+                deleteHabit(habit.id)
+                router.goBack();
+            }}>
+              <IonIcon icon={trash}/>
+            </IonButton>
+          </IonButtons>)}
         </IonToolbar>
       </IonHeader>
 
@@ -51,7 +69,7 @@ function ViewHabit() {
             </IonItem>
           </>
         ) : (
-          <div>Not found</div>
+            habit === null ? (<div>Loading...</div>)  : (<div>Not found</div>)
         )}
       </IonContent>
     </IonPage>

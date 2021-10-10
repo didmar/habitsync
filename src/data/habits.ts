@@ -6,6 +6,7 @@ import {
   getFirestore,
   setDoc,
   addDoc,
+  deleteDoc,
 } from 'firebase/firestore';
 import firebaseApp from "../Firebase";
 
@@ -68,6 +69,10 @@ export async function addHabit(habit: Habit): Promise<Habit> {
     measureType: habit.measureType,
   }).then(docRef => docRef.id)
   return new Habit(docId, habit.description, habit.measureType)
+}
+
+export async function deleteHabit(habitId: string): Promise<void> {
+  return deleteDoc(doc(db, "habits", habitId))
 }
 
 export async function updateValue(measure: Measure, value: number) {
