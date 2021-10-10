@@ -1,12 +1,15 @@
 import HabitListItem, {checkColSize, habitDescColSize} from '../components/HabitListItem';
-import {useState} from 'react';
-import {getHabits, Habit} from '../data/habits';
+import React, {useState} from 'react';
+import {addHabit, getHabits, Habit, MeasureType} from '../data/habits';
 import {
+    IonButton,
+    IonButtons,
     IonCol,
     IonContent,
     IonDatetime,
     IonGrid,
     IonHeader,
+    IonIcon,
     IonPage,
     IonRefresher,
     IonRefresherContent,
@@ -16,6 +19,8 @@ import {
     useIonViewWillEnter
 } from '@ionic/react';
 import './Home.css';
+import {EditHabitModal} from "../components/EditHabitModal";
+import {add} from "ionicons/icons";
 
 const dateDisplayFormat = "DDD D"
 
@@ -53,25 +58,37 @@ const Home: React.FunctionComponent = () => {
         }, 2000);
     };
 
+    const [habitEditModal, setHabitEditModal] = useState({isOpen: false});
+    const defaultHabit = new Habit("dummy", "", MeasureType.binary)
+    const onHabitEditModalClose = async (editedHabit?: Habit) => {
+        setHabitEditModal({ isOpen: false })
+        if(editedHabit !== undefined) {
+            const newHabit = await addHabit(editedHabit)
+            setHabits(currentHabits => [...currentHabits, newHabit]);
+        }
+    }
+
     return (
         <IonPage id="home-page" color="primary">
             <IonHeader>
                 <IonToolbar>
                     <IonTitle>Habits</IonTitle>
+                    <IonButtons slot="end">
+                        <IonButton onClick={() => setHabitEditModal({ isOpen: true})}>
+                            <IonIcon icon={add}/>
+                        </IonButton>
+                    </IonButtons>
                 </IonToolbar>
             </IonHeader>
             <IonContent fullscreen>
                 <IonRefresher slot="fixed" onIonRefresh={refresh}>
-                    <IonRefresherContent></IonRefresherContent>
+                    <IonRefresherContent/>
                 </IonRefresher>
 
-                <IonHeader collapse="condense">
-                    <IonToolbar>
-                        <IonTitle size="large">
-                            Home
-                        </IonTitle>
-                    </IonToolbar>
-                </IonHeader>
+                <EditHabitModal
+                    initialHabit={defaultHabit}
+                    isOpen={habitEditModal.isOpen}
+                    onClose={onHabitEditModalClose}/>
 
                 <IonGrid>
                     <IonRow>
@@ -80,7 +97,7 @@ const Home: React.FunctionComponent = () => {
                             dates.map(d =>
                                 <IonCol size={checkColSize}>
                                     <IonDatetime displayFormat={dateDisplayFormat} value={d.toISOString()}
-                                                 display-timezone="utc"/>
+                                                 display-timezone="utc" disabled={true} />
                                 </IonCol>
                             )
                         }

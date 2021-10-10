@@ -4,7 +4,8 @@ import {
   getDoc,
   getDocs,
   getFirestore,
-  setDoc
+  setDoc,
+  addDoc,
 } from 'firebase/firestore';
 import firebaseApp from "../Firebase";
 
@@ -59,6 +60,14 @@ export async function getHabit(id: string): Promise<Habit | undefined> {
   } else {
     return undefined;
   }
+}
+
+export async function addHabit(habit: Habit): Promise<Habit> {
+  const docId = await addDoc(collection(db, "habits"), {
+    description: habit.description,
+    measureType: habit.measureType,
+  }).then(docRef => docRef.id)
+  return new Habit(docId, habit.description, habit.measureType)
 }
 
 export async function updateValue(measure: Measure, value: number) {
