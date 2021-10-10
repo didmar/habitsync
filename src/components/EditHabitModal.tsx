@@ -1,5 +1,4 @@
 import {
-    IonBackButton,
     IonButton,
     IonButtons,
     IonContent,
@@ -13,11 +12,12 @@ import {
     IonSegment,
     IonSegmentButton,
     IonTitle,
-    IonToolbar
+    IonToolbar,
 } from '@ionic/react';
 import React, {useState} from "react";
 import {arrowBack, checkmarkCircleOutline, save, timer} from "ionicons/icons";
 import {Habit, MeasureType} from "../data/habits";
+import {InputChangeEventDetail, SegmentChangeEventDetail} from "@ionic/core";
 
 interface EditHabitModalProps {
     initialHabit: Habit;
@@ -27,12 +27,24 @@ interface EditHabitModalProps {
 
 export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({initialHabit, isOpen, onClose}: EditHabitModalProps) => {
     const [habit, setHabit] = useState<Habit>(initialHabit)
+
+    function onNameInput(e: CustomEvent<InputChangeEventDetail>) {
+        setHabit(new Habit(habit.id, e.detail.value!, habit.measureType));
+    }
+
+    function onMeasureTypeChange(e: CustomEvent<SegmentChangeEventDetail>) {
+        const newValue: string = e.detail.value!
+        const newMes: MeasureType = MeasureType[newValue as keyof typeof MeasureType]
+        setHabit(new Habit(habit.id, habit.description, newMes))
+    }
+
     return (
         <>
             <IonModal
                 isOpen={isOpen}
                 cssClass='my-custom-class'
                 onDidDismiss={e => onClose(undefined)}>
+
                 <IonHeader>
                     <IonToolbar>
                         <IonButtons slot="start">
@@ -51,6 +63,7 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                         </IonButtons>
                     </IonToolbar>
                 </IonHeader>
+
                 <IonContent>
                     <IonList  className="ion-padding">
                         <IonItem>
@@ -59,15 +72,11 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                                 color="primary"
                                 value={habit.description}
                                 placeholder="Describe your new habit"
-                                onIonChange={e => setHabit(new Habit(habit.id, e.detail.value!, habit.measureType))}
+                                onIonChange={onNameInput}
                                 />
                         </IonItem>
                         <IonSegment
-                            onIonChange={e => {
-                                const newValue: string = e.detail.value!
-                                const newMes: MeasureType = MeasureType[newValue as keyof typeof MeasureType]
-                                setHabit(new Habit(habit.id, habit.description, newMes))
-                            }}
+                            onIonChange={onMeasureTypeChange}
                             value={habit.measureType.toString()}>
                             <IonSegmentButton value={MeasureType.binary}>
                                 <IonIcon icon={checkmarkCircleOutline}/>
@@ -80,11 +89,17 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                         </IonSegment>
                         <IonItem>
                             <IonLabel>Unit:</IonLabel>
-                            <IonInput color="primary" placeholder="mins, hrs, kms, ..."/>
+                            <IonInput
+                                disabled={habit.measureType === MeasureType.binary}
+                                color="primary"
+                                placeholder="mins, hrs, kms, ..."/>
                         </IonItem>
                         <IonItem>
                             <IonLabel>Daily target:</IonLabel>
-                            <IonInput color="primary" placeholder="How many units to do to validate the habit on a given day"/>
+                            <IonInput
+                                disabled={habit.measureType === MeasureType.binary}
+                                color="primary"
+                                placeholder="How many units to do to validate the habit on a given day"/>
                         </IonItem>
                     </IonList>
                 </IonContent>
