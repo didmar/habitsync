@@ -16,7 +16,7 @@ import {
     IonToolbar
 } from '@ionic/react';
 import React, {useState} from "react";
-import {arrowBack, checkmarkCircleOutline, timer} from "ionicons/icons";
+import {arrowBack, checkmarkCircleOutline, save, timer} from "ionicons/icons";
 import {Habit, MeasureType} from "../data/habits";
 
 interface EditHabitModalProps {
@@ -36,20 +36,29 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                 <IonHeader>
                     <IonToolbar>
                         <IonButtons slot="start">
-                            <IonBackButton text="buttonText" icon={arrowBack} />
+                            <IonButton onClick={ e => onClose(undefined) }>
+                                <IonIcon icon={arrowBack}/>
+                            </IonButton>
                         </IonButtons>
                         <IonTitle>
                             Create new habit
                         </IonTitle>
+                        <IonButtons slot="end">
+                            <IonButton shape="round" fill="outline" onClick={ e => onClose(habit) }>
+                                <IonIcon slot="start" icon={save}/>
+                                Save
+                            </IonButton>
+                        </IonButtons>
                     </IonToolbar>
                 </IonHeader>
-                <IonContent className="ion-padding">
-                    <IonList>
+                <IonContent>
+                    <IonList  className="ion-padding">
                         <IonItem>
                             <IonLabel>Name:</IonLabel>
                             <IonInput
                                 color="primary"
                                 value={habit.description}
+                                placeholder="Describe your new habit"
                                 onIonChange={e => setHabit(new Habit(habit.id, e.detail.value!, habit.measureType))}
                                 />
                         </IonItem>
@@ -71,16 +80,11 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                         </IonSegment>
                         <IonItem>
                             <IonLabel>Unit:</IonLabel>
-                            <IonInput color="primary"/>
+                            <IonInput color="primary" placeholder="mins, hrs, kms, ..."/>
                         </IonItem>
                         <IonItem>
                             <IonLabel>Daily target:</IonLabel>
-                            <IonInput color="primary"/>
-                        </IonItem>
-
-                        <IonItem>
-                            <IonButton onClick={e => onClose(undefined)}>Cancel</IonButton>
-                            <IonButton onClick={e => onClose(habit)}>Add</IonButton>
+                            <IonInput color="primary" placeholder="How many units to do to validate the habit on a given day"/>
                         </IonItem>
                     </IonList>
                 </IonContent>
