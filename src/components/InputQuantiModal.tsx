@@ -58,7 +58,7 @@ export const InputQuantiModal: React.FunctionComponent<InputQuantiModalProps> = 
                             placeholder="Enter value"
                             required={true}
                             onIonChange={(e) => {
-                                const newValue = parseInt(e.detail.value!, 10);
+                                const newValue = parseFloat(e.detail.value!);
                                 console.log(newValue);
                                 setValue(newValue);
                             }}
