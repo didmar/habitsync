@@ -6,10 +6,10 @@ import {
     IonButtons,
     IonCol,
     IonContent,
-    IonDatetime,
     IonGrid,
     IonHeader,
     IonIcon,
+    IonLabel,
     IonPage,
     IonRefresher,
     IonRefresherContent,
@@ -23,6 +23,8 @@ import {EditHabitModal} from "../components/EditHabitModal";
 import {add} from "ionicons/icons";
 
 const dateDisplayFormat = "DDD D"
+
+const weekDays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
 
 const Home: React.FunctionComponent = () => {
 
@@ -96,8 +98,9 @@ const Home: React.FunctionComponent = () => {
                         {
                             dates.map(d =>
                                 <IonCol size={checkColSize}>
-                                    <IonDatetime displayFormat={dateDisplayFormat} value={d.toISOString()}
-                                                 display-timezone="utc" disabled={true} />
+                                    <IonLabel>
+                                        {weekDays[d.getDay()]}<br/>{d.getDate()}
+                                    </IonLabel>
                                 </IonCol>
                             )
                         }
