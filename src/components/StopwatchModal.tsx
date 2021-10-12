@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react";
 import {IonButton, IonButtons, IonLabel} from "@ionic/react";
 
 interface StopwatchModalProps {
-    onStopped: (minutes: number) => void;
+    onResetted: () => void;
+    onStarted: (seconds: number) => void;
+    onStopped: (seconds: number) => void;
 }
 
 
-const StopwatchModal = ({onStopped}: StopwatchModalProps) => {
+const StopwatchModal = ({onResetted, onStarted, onStopped}: StopwatchModalProps) => {
     const [time, setTime] = useState(0);
     const [running, setRunning] = useState(false);
 
@@ -27,7 +29,14 @@ const StopwatchModal = ({onStopped}: StopwatchModalProps) => {
     function onStartStop() {
         return () => {
             setRunning(!running);
-            onStopped(Math.floor((time / 1000)))
+            const seconds = (time / 1000)
+            if(running) {
+                console.log("Stopped !!")
+                onStopped(seconds)
+            } else {
+                console.log("Started !!")
+                onStarted(seconds)
+            }
         };
     }
 
@@ -35,7 +44,7 @@ const StopwatchModal = ({onStopped}: StopwatchModalProps) => {
         return () => {
             setRunning(false);
             setTime(0);
-            onStopped(0)
+            onResetted()
         };
     }
 

@@ -26,13 +26,44 @@ interface InputQuantiModalProps {
 }
 
 export const InputQuantiModal: React.FunctionComponent<InputQuantiModalProps> = ({onDismiss, onConfirm}: InputQuantiModalProps) => {
-    const [value, setValue] = useState(0)
+    const [value, setValue] = useState<number | undefined>(undefined)
     const [inputMode, setInputMode] = useState<InputMode>(InputMode.manual)
 
     function onInputModeChange(e: CustomEvent<SegmentChangeEventDetail>) {
         const newValue: string = e.detail.value!
         setInputMode(InputMode[newValue as keyof typeof InputMode])
+        setValue(undefined)
     }
+
+    const manualInput = (
+        <>
+            <IonItem disabled={inputMode !== InputMode.manual}>
+                <IonInput
+                    type="number"
+                    value={value}
+                    color="primary"
+                    placeholder="Enter value"
+                    required={true}
+                    onIonChange={(e) => {
+                        const newValue = parseFloat(e.detail.value!);
+                        console.log(newValue);
+                        setValue(newValue);
+                    }}
+                />
+            </IonItem>
+        </>
+    )
+
+    const stopwatchInput = (
+        <>
+            <IonItem disabled={inputMode !== InputMode.stopwatch}>
+                <StopwatchModal
+                    onResetted={() => setValue(undefined)}
+                    onStarted={(_) => setValue(undefined)}
+                    onStopped={(seconds) => setValue(seconds)}/>
+            </IonItem>
+        </>
+    )
 
     return (
         <>
@@ -50,31 +81,13 @@ export const InputQuantiModal: React.FunctionComponent<InputQuantiModalProps> = 
                             <IonLabel>Stopwatch</IonLabel>
                         </IonSegmentButton>
                     </IonSegment>
-                    <IonItem disabled={inputMode !== InputMode.manual}>
-                        <IonInput
-                            type="number"
-                            value={value}
-                            color="primary"
-                            placeholder="Enter value"
-                            required={true}
-                            onIonChange={(e) => {
-                                const newValue = parseFloat(e.detail.value!);
-                                console.log(newValue);
-                                setValue(newValue);
-                            }}
-                        />
-                    </IonItem>
-                    <IonItem disabled={inputMode !== InputMode.stopwatch}>
-                        <StopwatchModal onStopped={(minutes) => setValue(minutes)}/>
-                    </IonItem>
+                    {inputMode === InputMode.manual ? manualInput : stopwatchInput}
                     <IonItem>
                         <IonButtons slot="end">
                             <IonButton onClick={() => onDismiss()}>Cancel</IonButton>
-                            <IonButton onClick={() => {
-                                if(value >= 0) {
-                                    onConfirm(value); onDismiss()
-                                }
-                                }}>
+                            <IonButton
+                                disabled={value === undefined || value < 0}
+                                onClick={() => { onConfirm(value!); onDismiss() }}>
                                 OK
                             </IonButton>
                         </IonButtons>
