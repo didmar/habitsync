@@ -76,27 +76,18 @@ const Home: React.FunctionComponent = () => {
         <IonPage id="home-page" color="primary">
             <IonHeader>
                 <IonToolbar>
-                    <IonTitle>Habits</IonTitle>
-                    <IonButtons slot="end">
-                        <IonButton onClick={() => setHabitEditModal({ isOpen: true})}>
-                            <IonIcon icon={add}/>
-                        </IonButton>
-                    </IonButtons>
-                </IonToolbar>
-            </IonHeader>
-            <IonContent fullscreen>
-                <IonRefresher slot="fixed" onIonRefresh={refresh}>
-                    <IonRefresherContent/>
-                </IonRefresher>
+                    <IonRow class="ion-align-items-center">
+                        <IonCol size={"1"}>
+                            <IonButtons>
+                                <IonButton onClick={() => setHabitEditModal({ isOpen: true})}>
+                                    <IonIcon icon={add}/>
+                                </IonButton>
+                            </IonButtons>
+                        </IonCol>
+                        <IonCol size={(parseInt(habitDescColSize) - 1).toString()}>
 
-                <EditHabitModal
-                    initialHabit={defaultHabit}
-                    isOpen={habitEditModal.isOpen}
-                    onClose={onHabitEditModalClose}/>
-
-                <IonGrid>
-                    <IonRow>
-                        <IonCol size={habitDescColSize}/>
+                            <IonTitle>Habits</IonTitle>
+                        </IonCol>
                         {
                             dates.map(d =>
                                 <IonCol size={checkColSize}>
@@ -107,11 +98,23 @@ const Home: React.FunctionComponent = () => {
                             )
                         }
                     </IonRow>
+                </IonToolbar>
+            </IonHeader>
+            <IonContent>
+                <IonRefresher slot="fixed" onIonRefresh={refresh}>
+                    <IonRefresherContent/>
+                </IonRefresher>
+
+                <EditHabitModal
+                    initialHabit={defaultHabit}
+                    isOpen={habitEditModal.isOpen}
+                    onClose={onHabitEditModalClose}/>
+
+                <IonGrid>
                     <span key={refreshDate}>
                         {habits.map(h => <HabitListItem habit={h} dates={dates}/>)}
                     </span>
                 </IonGrid>
-
             </IonContent>
         </IonPage>
     );
