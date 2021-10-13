@@ -28,3 +28,6 @@ yarn-error.log*
 .eslintcache
 
 firestore.creds.json
+
+android
+public/assets/app.apk
