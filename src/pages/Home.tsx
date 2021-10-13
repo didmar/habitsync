@@ -22,8 +22,6 @@ import './Home.css';
 import {EditHabitModal} from "../components/EditHabitModal";
 import {add} from "ionicons/icons";
 
-const dateDisplayFormat = "DDD D"
-
 const weekDays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
 
 const Home: React.FunctionComponent = () => {
@@ -31,6 +29,9 @@ const Home: React.FunctionComponent = () => {
     const [habits, setHabits] = useState<Habit[]>([]);
 
     const [dates, setDates] = useState<Date[]>([]);
+
+    // State to trigger the update of the measures in sub-components when refreshing
+    const [refreshDate, setRefreshDate] = useState<number>(Date.now());
 
     const updateDates = () => {
         const now = Date.now();
@@ -45,6 +46,7 @@ const Home: React.FunctionComponent = () => {
     const updateEverything = async () => {
         updateHabits();
         updateDates();
+        setRefreshDate(Date.now());  // Trigger measures update
     }
 
     useIonViewWillEnter(updateEverything);
@@ -52,7 +54,7 @@ const Home: React.FunctionComponent = () => {
     const refresh = async (e: CustomEvent) => {
         console.log("Begin refresh")
 
-        updateEverything()
+        await updateEverything()
 
         setTimeout(() => {
             e.detail.complete();
@@ -105,7 +107,9 @@ const Home: React.FunctionComponent = () => {
                             )
                         }
                     </IonRow>
-                    {habits.map(h => <HabitListItem habit={h} dates={dates}/>)}
+                    <span key={refreshDate}>
+                        {habits.map(h => <HabitListItem habit={h} dates={dates}/>)}
+                    </span>
                 </IonGrid>
 
             </IonContent>
