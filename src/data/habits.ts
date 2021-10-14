@@ -12,15 +12,65 @@ import firebaseApp from "../Firebase";
 
 const db = getFirestore(firebaseApp)
 
-export enum MeasureType {
+export enum MeasureKind {
   binary = "binary",
   quanti = "quanti",
 }
 
+export class MeasureType {
+  kind: MeasureKind;
+  unit: string | undefined;
+
+  constructor (kind: MeasureKind, unit: string | undefined) {
+    this.kind = kind;
+    this.unit = unit;
+  }
+  toJSON() {
+    if (this.kind === MeasureKind.binary) {
+      return {
+        kind: this.kind
+      }
+    } else {
+      return {
+        kind: this.kind,
+        unit: this.unit,
+      }
+    }
+  }
+}
+
+interface UnitDef {
+  name: string;
+  suffix: string | undefined;
+}
+
+export const units: UnitDef[] = [
+  {
+    "name": "seconds",
+    "suffix": "s",
+  },
+  {
+    "name": "minutes",
+    "suffix": "m",
+  },
+  {
+    "name": "meters",
+    "suffix": "m",
+  },
+  {
+    "name": "kilometers",
+    "suffix": "km",
+  },
+  {
+    "name": "other",
+    "suffix": undefined,
+  },
+]
+
 export class Habit {
   id: string;
   description: string;
-  measureType: MeasureType
+  measureType: MeasureType;
 
   constructor (id: string, description: string, measureType: MeasureType) {
     this.id = id;
@@ -45,11 +95,10 @@ const habitsCol = collection(db, 'habits');
 
 export async function getHabits(): Promise<Habit[]> {
   const habitsSnapshot = await getDocs(habitsCol);
-  const habitsList = habitsSnapshot.docs.map(doc => {
+  return habitsSnapshot.docs.map(doc => {
     const data = doc.data();
     return new Habit(doc.id, data.description, data.measureType);
   });
-  return habitsList;
 }
 
 export async function getHabit(id: string): Promise<Habit | undefined> {
@@ -66,7 +115,7 @@ export async function getHabit(id: string): Promise<Habit | undefined> {
 export async function addHabit(habit: Habit): Promise<Habit> {
   const docId = await addDoc(collection(db, "habits"), {
     description: habit.description,
-    measureType: habit.measureType,
+    measureType: habit.measureType.toJSON(),
   }).then(docRef => docRef.id)
   return new Habit(docId, habit.description, habit.measureType)
 }

@@ -1,5 +1,5 @@
 import {IonCheckbox, IonCol, IonIcon, IonLabel, useIonModal} from '@ionic/react';
-import {Measure, MeasureType, updateMeasureValue} from '../data/habits';
+import {Measure, MeasureKind, MeasureType, updateMeasureValue} from '../data/habits';
 import React, {useEffect, useState} from "react";
 import {InputQuantiModal} from './InputQuantiModal'
 import {help} from "ionicons/icons";
@@ -37,7 +37,7 @@ const MeasureInput: React.FunctionComponent<MeasureInputProps> = ({measureType, 
     });
 
     var checker;
-    if (measureType === "binary") {
+    if (measureType.kind === MeasureKind.binary) {
         checker =
             <>{
                 value === undefined ?

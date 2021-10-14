@@ -11,13 +11,15 @@ import {
     IonModal,
     IonSegment,
     IonSegmentButton,
+    IonSelect,
+    IonSelectOption,
     IonTitle,
     IonToolbar,
 } from '@ionic/react';
 import React, {useState} from "react";
 import {arrowBack, checkmarkCircleOutline, save, timer} from "ionicons/icons";
-import {Habit, MeasureType} from "../data/habits";
-import {InputChangeEventDetail, SegmentChangeEventDetail} from "@ionic/core";
+import {Habit, MeasureKind, MeasureType, units} from "../data/habits";
+import {InputChangeEventDetail, SegmentChangeEventDetail, SelectChangeEventDetail} from "@ionic/core";
 
 interface EditHabitModalProps {
     initialHabit: Habit;
@@ -27,15 +29,23 @@ interface EditHabitModalProps {
 
 export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({initialHabit, isOpen, onClose}: EditHabitModalProps) => {
     const [habit, setHabit] = useState<Habit>(initialHabit)
+    // const [unit, setUnit] = useState<string | undefined>("other")
 
     function onNameInput(e: CustomEvent<InputChangeEventDetail>) {
         setHabit(new Habit(habit.id, e.detail.value!, habit.measureType));
     }
 
-    function onMeasureTypeChange(e: CustomEvent<SegmentChangeEventDetail>) {
+    function onMeasureKindChange(e: CustomEvent<SegmentChangeEventDetail>) {
         const newValue: string = e.detail.value!
-        const newMes: MeasureType = MeasureType[newValue as keyof typeof MeasureType]
+        const kind: MeasureKind = MeasureKind[newValue as keyof typeof MeasureKind]
+        const unit = kind === MeasureKind.binary ? undefined : "other"
+        const newMes: MeasureType = new MeasureType(kind, unit)
         setHabit(new Habit(habit.id, habit.description, newMes))
+    }
+
+    function onSelectChange(e:  CustomEvent<SelectChangeEventDetail>) {
+        const newUnit = e.detail.value!
+        setHabit(new Habit(habit.id, habit.description, new MeasureType(MeasureKind.quanti, newUnit)))
     }
 
     return (
@@ -76,28 +86,30 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                                 />
                         </IonItem>
                         <IonSegment
-                            onIonChange={onMeasureTypeChange}
-                            value={habit.measureType.toString()}>
-                            <IonSegmentButton value={MeasureType.binary}>
+                            onIonChange={onMeasureKindChange}
+                            value={habit.measureType.kind.toString()}>
+                            <IonSegmentButton value={MeasureKind.binary}>
                                 <IonIcon icon={checkmarkCircleOutline}/>
                                 <IonLabel>Binary</IonLabel>
                             </IonSegmentButton>
-                            <IonSegmentButton value={MeasureType.quanti}>
+                            <IonSegmentButton value={MeasureKind.quanti}>
                                 <IonIcon icon={timer}/>
                                 <IonLabel>Quantifiable</IonLabel>
                             </IonSegmentButton>
                         </IonSegment>
-                        <IonItem>
+                        <IonItem disabled={habit.measureType.kind === MeasureKind.binary}>
                             <IonLabel>Unit:</IonLabel>
-                            <IonInput
-                                disabled={habit.measureType === MeasureType.binary}
-                                color="primary"
-                                placeholder="mins, hrs, kms, ..."/>
+                            <IonSelect value={habit.measureType.unit} onIonChange={onSelectChange}>
+                                {units.map(unitDef => (
+                                    <IonSelectOption key={units.indexOf(unitDef)} value={unitDef.name}>
+                                        {unitDef.name} {unitDef.suffix ? "(" + unitDef.suffix + ")" : ""}
+                                    </IonSelectOption>
+                                ))}
+                            </IonSelect>
                         </IonItem>
                         <IonItem>
                             <IonLabel>Daily target:</IonLabel>
                             <IonInput
-                                disabled={habit.measureType === MeasureType.binary}
                                 color="primary"
                                 placeholder="How many units to do to validate the habit on a given day"/>
                         </IonItem>
