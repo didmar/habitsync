@@ -39,33 +39,15 @@ export class MeasureType {
   }
 }
 
-interface UnitDef {
-  name: string;
-  suffix: string | undefined;
-}
+export const unitsMap = new Map([
+  ["seconds", "s"],
+  ["minutes", "m"],
+  ["meters",  "m"],
+  ["kilometers", "km"],
+  ["other", undefined],
+])
 
-export const units: UnitDef[] = [
-  {
-    "name": "seconds",
-    "suffix": "s",
-  },
-  {
-    "name": "minutes",
-    "suffix": "m",
-  },
-  {
-    "name": "meters",
-    "suffix": "m",
-  },
-  {
-    "name": "kilometers",
-    "suffix": "km",
-  },
-  {
-    "name": "other",
-    "suffix": undefined,
-  },
-]
+export const units: string[] = Array.from(unitsMap.keys())
 
 export class Habit {
   id: string;

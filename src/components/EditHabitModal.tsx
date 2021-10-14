@@ -18,7 +18,7 @@ import {
 } from '@ionic/react';
 import React, {useState} from "react";
 import {arrowBack, checkmarkCircleOutline, save, timer} from "ionicons/icons";
-import {Habit, MeasureKind, MeasureType, units} from "../data/habits";
+import {Habit, MeasureKind, MeasureType, units, unitsMap} from "../data/habits";
 import {InputChangeEventDetail, SegmentChangeEventDetail, SelectChangeEventDetail} from "@ionic/core";
 
 interface EditHabitModalProps {
@@ -53,12 +53,12 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
             <IonModal
                 isOpen={isOpen}
                 cssClass='my-custom-class'
-                onDidDismiss={e => onClose(undefined)}>
+                onDidDismiss={_ => onClose(undefined)}>
 
                 <IonHeader>
                     <IonToolbar>
                         <IonButtons slot="start">
-                            <IonButton onClick={ e => onClose(undefined) }>
+                            <IonButton onClick={ _ => onClose(undefined) }>
                                 <IonIcon icon={arrowBack}/>
                             </IonButton>
                         </IonButtons>
@@ -66,7 +66,7 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                             Create new habit
                         </IonTitle>
                         <IonButtons slot="end">
-                            <IonButton shape="round" fill="outline" onClick={ e => onClose(habit) }>
+                            <IonButton shape="round" fill="outline" onClick={ _ => onClose(habit) }>
                                 <IonIcon slot="start" icon={save}/>
                                 Save
                             </IonButton>
@@ -100,11 +100,14 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                         <IonItem disabled={habit.measureType.kind === MeasureKind.binary}>
                             <IonLabel>Unit:</IonLabel>
                             <IonSelect value={habit.measureType.unit} onIonChange={onSelectChange}>
-                                {units.map(unitDef => (
-                                    <IonSelectOption key={units.indexOf(unitDef)} value={unitDef.name}>
-                                        {unitDef.name} {unitDef.suffix ? "(" + unitDef.suffix + ")" : ""}
-                                    </IonSelectOption>
-                                ))}
+                                {units.map( name => {
+                                    const suffix = unitsMap.get(name);
+                                    return (
+                                        <IonSelectOption key={units.indexOf(name)} value={name}>
+                                            {name} {suffix ? "(" + suffix + ")" : ""}
+                                        </IonSelectOption>
+                                    )
+                                })}
                             </IonSelect>
                         </IonItem>
                         <IonItem>
