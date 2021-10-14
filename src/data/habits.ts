@@ -75,7 +75,7 @@ export async function deleteHabit(habitId: string): Promise<void> {
   return deleteDoc(doc(db, "habits", habitId))
 }
 
-export async function updateValue(measure: Measure, value: number) {
+export async function updateMeasureValue(measure: Measure, value: number) {
   console.log("Updating habit " + measure.habitId + " to: " + value)
   const measureRef = doc(db, 'habits', measure.habitId, 'measures', measure.day);
   setDoc(measureRef, {day: measure.day, value: value}, { merge: true });

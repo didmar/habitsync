@@ -1,7 +1,8 @@
-import {IonCheckbox, IonCol, IonLabel, useIonModal} from '@ionic/react';
-import {Measure, MeasureType, updateValue} from '../data/habits';
+import {IonCheckbox, IonCol, IonIcon, IonLabel, useIonModal} from '@ionic/react';
+import {Measure, MeasureType, updateMeasureValue} from '../data/habits';
 import React, {useEffect, useState} from "react";
 import {InputQuantiModal} from './InputQuantiModal'
+import {help} from "ionicons/icons";
 
 interface MeasureInputProps {
     measureType: MeasureType;
@@ -21,10 +22,6 @@ const MeasureInput: React.FunctionComponent<MeasureInputProps> = ({measureType, 
         })();
     }, [])
 
-    function checked(): boolean {
-        return value !== undefined && value > 0;
-    }
-
     /**
      * Modal to set the value in the "quanti" case
      */
@@ -42,13 +39,25 @@ const MeasureInput: React.FunctionComponent<MeasureInputProps> = ({measureType, 
     var checker;
     if (measureType === "binary") {
         checker =
-            <IonCheckbox
-                checked={checked()}
-                onIonChange={e => {
-                    const value = e.detail.checked ? 1 : 0
-                    updateValue(measure, value).then(() => setValue(value))
-                }}
-            />;
+            <>{
+                value === undefined ?
+                    <IonIcon
+                        icon={help}
+                        onClick={e => {
+                            const newValue = 1  // ticked
+                            updateMeasureValue(measure, newValue).then(() => setValue(newValue))
+                        }}
+                    />
+                    :
+                    <IonCheckbox
+                        checked={value > 0}
+                        onIonChange={e => {
+                            const newValue = e.detail.checked ? 1 : 0
+                            updateMeasureValue(measure, newValue).then(() => setValue(newValue))
+                        }}
+                    />
+            }
+            </>
     } else {
         const fmtValue = value === undefined ? "?" : value
         checker = <IonLabel onClick={ () => present({}) }>{fmtValue}</IonLabel>;
