@@ -43,8 +43,13 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
     }
 
     function onSelectChange(e:  CustomEvent<SelectChangeEventDetail>) {
-        const newUnit = e.detail.value!
-        setHabit(new Habit(habit.id, habit.description, new MeasureType(MeasureKind.quanti, newUnit)))
+        let newUnit = e.detail.value!
+        if(newUnit === null || newUnit === undefined) {
+            return
+        }
+        if(newUnit !== habit.measureType.unit) {
+            setHabit(new Habit(habit.id, habit.description, new MeasureType(MeasureKind.quanti, newUnit)))
+        }
     }
 
     const onCancel = () => {
