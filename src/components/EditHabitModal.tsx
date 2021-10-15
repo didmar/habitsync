@@ -29,7 +29,6 @@ interface EditHabitModalProps {
 
 export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({initialHabit, isOpen, onClose}: EditHabitModalProps) => {
     const [habit, setHabit] = useState<Habit>(initialHabit)
-    // const [unit, setUnit] = useState<string | undefined>("other")
 
     function onNameInput(e: CustomEvent<InputChangeEventDetail>) {
         setHabit(new Habit(habit.id, e.detail.value!, habit.measureType));
@@ -48,17 +47,27 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
         setHabit(new Habit(habit.id, habit.description, new MeasureType(MeasureKind.quanti, newUnit)))
     }
 
-    return (
+    const onCancel = () => {
+        onClose(undefined)
+        setHabit(initialHabit)  // reset for next time with open the modal
+    }
+
+    const onConfirm = () => {
+        onClose(habit)
+        setHabit(initialHabit)  // reset for next time with open the modal
+    }
+
+        return (
         <>
             <IonModal
                 isOpen={isOpen}
                 cssClass='my-custom-class'
-                onDidDismiss={_ => onClose(undefined)}>
+                onDidDismiss={onCancel}>
 
                 <IonHeader>
                     <IonToolbar>
                         <IonButtons slot="start">
-                            <IonButton onClick={ _ => onClose(undefined) }>
+                            <IonButton onClick={onCancel}>
                                 <IonIcon icon={arrowBack}/>
                             </IonButton>
                         </IonButtons>
@@ -66,7 +75,7 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                             Create new habit
                         </IonTitle>
                         <IonButtons slot="end">
-                            <IonButton shape="round" fill="outline" onClick={ _ => onClose(habit) }>
+                            <IonButton shape="round" fill="outline" onClick={onConfirm}>
                                 <IonIcon slot="start" icon={save}/>
                                 Save
                             </IonButton>
