@@ -21,12 +21,13 @@ export enum InputMode {
 }
 
 interface InputQuantiModalProps {
+    initValue: number | undefined;
     onDismiss: () => void;
     onConfirm: (value: number) => void;
 }
 
-export const InputQuantiModal: React.FunctionComponent<InputQuantiModalProps> = ({onDismiss, onConfirm}: InputQuantiModalProps) => {
-    const [value, setValue] = useState<number | undefined>(undefined)
+export const InputQuantiModal: React.FunctionComponent<InputQuantiModalProps> = ({initValue, onDismiss, onConfirm}: InputQuantiModalProps) => {
+    const [value, setValue] = useState<number | undefined>(initValue)
     const [inputMode, setInputMode] = useState<InputMode>(InputMode.manual)
 
     function onInputModeChange(e: CustomEvent<SegmentChangeEventDetail>) {

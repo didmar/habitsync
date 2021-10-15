@@ -32,6 +32,7 @@ const MeasureInput: React.FunctionComponent<MeasureInputProps> = ({measureType, 
         updateMeasureValue(measure, newValue).then(() => setValue(newValue))
     }
     const [present, dismiss] = useIonModal(InputQuantiModal, {
+        initValue: value,
         onDismiss: handleDismiss,
         onConfirm: handleSetValue,
     });
