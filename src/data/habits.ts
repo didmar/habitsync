@@ -49,18 +49,6 @@ export const unitsMap = new Map([
 
 export const units: string[] = Array.from(unitsMap.keys())
 
-export class Habit {
-  id: string;
-  description: string;
-  measureType: MeasureType;
-
-  constructor (id: string, description: string, measureType: MeasureType) {
-    this.id = id;
-    this.description = description;
-    this.measureType = measureType;
-  }
-}
-
 export class Measure {
   habitId: string;
   day: string;
@@ -73,13 +61,58 @@ export class Measure {
   }
 }
 
+export enum Period {
+  day = "day",
+  week = "week",
+  month = "month",
+}
+
+export const periods = Object.keys(Period) as Array<keyof typeof Period>
+
+export class Target {
+    gte: number;
+    period: Period;
+    every: number | undefined;
+    times: number | undefined;
+
+    constructor (gte: number, period: Period, every: number | undefined, times: number | undefined) {
+        this.gte = gte;
+        this.period = period;
+        this.every = every;
+        this.times = times;
+    }
+
+    toJSON() {
+        return {
+            gte: this.gte,
+            period: this.period.toString(),
+            ...this.every && {every: this.every},
+            ...this.times && {times: this.times},
+        }
+    }
+}
+
+export class Habit {
+  id: string;
+  description: string;
+  measureType: MeasureType;
+  target: Target;
+
+  constructor (id: string, description: string, measureType: MeasureType, target: Target) {
+    this.id = id;
+    this.description = description;
+    this.measureType = measureType;
+    this.target = target;
+  }
+}
+
 const habitsCol = collection(db, 'habits');
 
 export async function getHabits(): Promise<Habit[]> {
   const habitsSnapshot = await getDocs(habitsCol);
   return habitsSnapshot.docs.map(doc => {
     const data = doc.data();
-    return new Habit(doc.id, data.description, data.measureType);
+    return new Habit(doc.id, data.description, data.measureType, data.frequency);
   });
 }
 
@@ -88,7 +121,7 @@ export async function getHabit(id: string): Promise<Habit | undefined> {
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     const data = docSnap.data();
-    return new Habit(id, data.description, data.measureType);
+    return new Habit(id, data.description, data.measureType, data.frequency);
   } else {
     return undefined;
   }
@@ -98,8 +131,9 @@ export async function addHabit(habit: Habit): Promise<Habit> {
   const docId = await addDoc(collection(db, "habits"), {
     description: habit.description,
     measureType: habit.measureType.toJSON(),
+    target: habit.target.toJSON(),
   }).then(docRef => docRef.id)
-  return new Habit(docId, habit.description, habit.measureType)
+  return new Habit(docId, habit.description, habit.measureType, habit.target)
 }
 
 export async function deleteHabit(habitId: string): Promise<void> {

@@ -1,6 +1,6 @@
 import HabitListItem, {checkColSize, habitDescColSize} from '../components/HabitListItem';
 import React, {useState} from 'react';
-import {addHabit, getHabits, Habit, MeasureKind, MeasureType} from '../data/habits';
+import {addHabit, getHabits, Habit, MeasureKind, MeasureType, Period, Target} from '../data/habits';
 import {
     IonButton,
     IonButtons,
@@ -64,7 +64,8 @@ const Home: React.FunctionComponent = () => {
 
     const [habitEditModal, setHabitEditModal] = useState({isOpen: false});
     const defaultMeasureType = new MeasureType(MeasureKind.binary, undefined)
-    const defaultHabit = new Habit("dummy", "", defaultMeasureType)
+    const defaultTarget = new Target(1, Period.day, undefined, undefined)
+    const defaultHabit = new Habit("dummy", "", defaultMeasureType, defaultTarget)
     const onHabitEditModalClose = async (editedHabit?: Habit) => {
         setHabitEditModal({ isOpen: false })
         if(editedHabit !== undefined) {
