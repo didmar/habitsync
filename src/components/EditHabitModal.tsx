@@ -67,7 +67,8 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
     }
 
     function onDailyTargetInput(e: CustomEvent<InputChangeEventDetail>) {
-        updateTarget(parseInt(e.detail.value!), habit.target.period, habit.target.every, habit.target.times)
+        const newGte = e.detail.value ? parseInt(e.detail.value) : 0
+        updateTarget(newGte, habit.target.period, habit.target.every, habit.target.times)
     }
 
     function onPeriodChange(e: CustomEvent<SegmentChangeEventDetail>) {
@@ -120,7 +121,11 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                         Create new habit
                     </IonTitle>
                     <IonButtons slot="end">
-                        <IonButton shape="round" fill="outline" onClick={onConfirm}>
+                        <IonButton
+                            disabled={(habit.description.length < 1) || (habit.target.gte < 1)}
+                            shape="round"
+                            fill="outline"
+                            onClick={onConfirm}>
                             <IonIcon slot="start" icon={save}/>
                             Save
                         </IonButton>
@@ -160,7 +165,7 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                             <IonLabel>Target:</IonLabel>
                             <IonInput
                                     onIonChange={onDailyTargetInput}
-                                    value={habit.target.gte}
+                                    value={habit.target.gte >= 1 ? habit.target.gte : ""}
                                     color="primary"
                                     placeholder="How many units to do to validate the habit on a given day"/>
                             </IonItem>
