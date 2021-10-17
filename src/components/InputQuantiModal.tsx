@@ -40,15 +40,19 @@ export const InputQuantiModal: React.FunctionComponent<InputQuantiModalProps> = 
         <>
             <IonItem disabled={inputMode !== InputMode.manual}>
                 <IonInput
+                    style={{"max-width": "200px", "margin-left": "auto", "margin-right": "auto"}}
                     type="number"
-                    value={value}
+                    inputmode="numeric"
+                    value={value ? value : ""}
                     color="primary"
                     placeholder="Enter value"
                     required={true}
                     onIonChange={(e) => {
-                        const newValue = parseFloat(e.detail.value!);
-                        console.log(newValue);
-                        setValue(newValue);
+                        if(e.detail.value) {
+                            const newValue = parseFloat(e.detail.value!);
+                            console.log(newValue);
+                            setValue(newValue);
+                        }
                     }}
                 />
             </IonItem>
@@ -57,7 +61,9 @@ export const InputQuantiModal: React.FunctionComponent<InputQuantiModalProps> = 
 
     const stopwatchInput = (
         <>
-            <IonItem disabled={inputMode !== InputMode.stopwatch}>
+            <IonItem
+                disabled={inputMode !== InputMode.stopwatch}
+                style={{"max-width": "400px", "margin-left": "auto", "margin-right": "auto"}}>
                 <StopwatchModal
                     onResetted={() => setValue(undefined)}
                     onStarted={(_) => setValue(undefined)}
@@ -84,9 +90,16 @@ export const InputQuantiModal: React.FunctionComponent<InputQuantiModalProps> = 
                     </IonSegment>
                     {inputMode === InputMode.manual ? manualInput : stopwatchInput}
                     <IonItem>
-                        <IonButtons slot="end">
-                            <IonButton onClick={() => onDismiss()}>Cancel</IonButton>
+                        <IonButtons slot="start">
                             <IonButton
+                                onClick={() => onDismiss()}>
+                                Cancel
+                            </IonButton>
+                        </IonButtons>
+                        <IonButtons slot="end">
+
+                            <IonButton
+                                type={"submit"}
                                 disabled={value === undefined || value < 0}
                                 onClick={() => { onConfirm(value!); onDismiss() }}>
                                 OK
