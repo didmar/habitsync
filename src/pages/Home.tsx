@@ -1,18 +1,19 @@
 import HabitListItem, {checkColSize, habitDescColSize} from '../components/HabitListItem';
 import React, {useState} from 'react';
-import {addHabit, getHabits, Habit, MeasureKind, MeasureType, Period, Target} from '../data/habits';
+import {addHabit, getHabits, Habit, MeasureKind, MeasureType, Period, Target, updateHabitsOrder} from '../data/habits';
 import {
     IonButton,
     IonButtons,
     IonCol,
     IonContent,
-    IonGrid,
     IonHeader,
     IonIcon,
     IonLabel,
+    IonList,
     IonPage,
     IonRefresher,
     IonRefresherContent,
+    IonReorderGroup,
     IonRow,
     IonTitle,
     IonToolbar,
@@ -21,6 +22,7 @@ import {
 import './Home.css';
 import {EditHabitModal} from "../components/EditHabitModal";
 import {add} from "ionicons/icons";
+import { ItemReorderEventDetail } from '@ionic/core';
 
 const weekDays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
 
@@ -40,6 +42,7 @@ const Home: React.FunctionComponent = () => {
 
     const updateHabits = async () => {
         const hbts: Habit[] = await getHabits();
+        hbts.sort(compareHabits)
         setHabits(hbts);
     }
 
@@ -65,14 +68,57 @@ const Home: React.FunctionComponent = () => {
     const [habitEditModal, setHabitEditModal] = useState({isOpen: false});
     const defaultMeasureType = new MeasureType(MeasureKind.binary, undefined)
     const defaultTarget = new Target(1, Period.day, undefined, undefined)
-    const defaultHabit = new Habit("dummy", "", defaultMeasureType, defaultTarget)
+    const defaultHabit = new Habit("dummy", "", defaultMeasureType, defaultTarget, 0)
     const onHabitEditModalClose = async (editedHabit?: Habit) => {
         setHabitEditModal({ isOpen: false })
         if(editedHabit !== undefined) {
             const newHabit = await addHabit(editedHabit)
+            newHabit.order = habits.length;
             setHabits(currentHabits => [...currentHabits, newHabit]);
         }
     }
+
+    function doReorder(event: CustomEvent<ItemReorderEventDetail>) {
+        //console.log('Dragged from index', event.detail.from, 'to', event.detail.to);
+
+        const length = habits.length
+        for (var i = 0, cpt = 0; i < length; i++) {
+            if(i != event.detail.from && i != event.detail.to) {
+                habits[i].order = cpt
+                cpt++;
+            } else if (i == event.detail.from) {
+                habits[i].order = event.detail.to
+            } else if (i == event.detail.to) {
+                if(event.detail.to < event.detail.from) {
+                    cpt ++;
+                }
+                habits[i].order = cpt
+                cpt++;
+                if(event.detail.to > event.detail.from) {
+                    cpt ++;
+                }
+            }
+        }
+
+        //for (var i = 0, cpt = 0; i < length; i++) {
+        //    console.log("- " + habits[i].description + " -> " + habits[i].order.toString())
+        //}
+
+        updateHabitsOrder(habits)
+        habits.sort(compareHabits)
+
+        event.detail.complete();
+    }
+
+    function compareHabits(habit1: Habit, habit2: Habit): number {
+        if(habit1.order < habit2.order) {
+            return -1
+        } else if (habit1.order == habit2.order) {
+            return 0
+        } else {
+            return 1
+        }
+    };
 
     return (
         <IonPage id="home-page" color="primary">
@@ -87,7 +133,6 @@ const Home: React.FunctionComponent = () => {
                             </IonButtons>
                         </IonCol>
                         <IonCol size={(parseInt(habitDescColSize) - 1).toString()}>
-
                             <IonTitle>Habits</IonTitle>
                         </IonCol>
                         {
@@ -112,11 +157,13 @@ const Home: React.FunctionComponent = () => {
                     isOpen={habitEditModal.isOpen}
                     onClose={onHabitEditModalClose}/>
 
-                <IonGrid>
+                <IonList>
                     <span key={refreshDate}>
-                        {habits.map(h => <HabitListItem habit={h} dates={dates}/>)}
+                        <IonReorderGroup disabled={false} onIonItemReorder={doReorder}>
+                            {habits.map(h => <HabitListItem habit={h} dates={dates}/>)}
+                        </IonReorderGroup>
                     </span>
-                </IonGrid>
+                </IonList>
             </IonContent>
         </IonPage>
     );

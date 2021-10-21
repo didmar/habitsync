@@ -35,7 +35,7 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
     const [habit, setHabit] = useState<Habit>(initialHabit)
 
     function onNameInput(e: CustomEvent<InputChangeEventDetail>) {
-        setHabit(new Habit(habit.id, e.detail.value!, habit.measureType, habit.target));
+        setHabit(new Habit(habit.id, e.detail.value!, habit.measureType, habit.target, habit.order));
     }
 
     function onMeasureKindChange(e: CustomEvent<SegmentChangeEventDetail>) {
@@ -43,7 +43,7 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
         const kind: MeasureKind = MeasureKind[newValue as keyof typeof MeasureKind]
         const unit = kind === MeasureKind.binary ? undefined : "other"
         const newMes: MeasureType = new MeasureType(kind, unit)
-        setHabit(new Habit(habit.id, habit.description, newMes, habit.target))
+        setHabit(new Habit(habit.id, habit.description, newMes, habit.target, habit.order))
     }
 
     function onUnitSelect(e:  CustomEvent<SelectChangeEventDetail>) {
@@ -57,13 +57,14 @@ export const EditHabitModal: React.FunctionComponent<EditHabitModalProps> = ({in
                 habit.description,
                 new MeasureType(MeasureKind.quanti, newUnit),
                 habit.target,
+                habit.order,
             ))
         }
     }
 
     function updateTarget(gte: number, period: Period, every: number | undefined, times: number | undefined) {
         const newTarget = new Target(gte, period, every, times)
-        setHabit(new Habit(habit.id, habit.description, habit.measureType, newTarget));
+        setHabit(new Habit(habit.id, habit.description, habit.measureType, newTarget, habit.order));
     }
 
     function onDailyTargetInput(e: CustomEvent<InputChangeEventDetail>) {

@@ -97,12 +97,14 @@ export class Habit {
   description: string;
   measureType: MeasureType;
   target: Target;
+  order: number;
 
-  constructor (id: string, description: string, measureType: MeasureType, target: Target) {
+  constructor (id: string, description: string, measureType: MeasureType, target: Target, order: number) {
     this.id = id;
     this.description = description;
     this.measureType = measureType;
     this.target = target;
+    this.order = order;
   }
 }
 
@@ -112,7 +114,7 @@ export async function getHabits(): Promise<Habit[]> {
   const habitsSnapshot = await getDocs(habitsCol);
   return habitsSnapshot.docs.map(doc => {
     const data = doc.data();
-    return new Habit(doc.id, data.description, data.measureType, data.frequency);
+    return new Habit(doc.id, data.description, data.measureType, data.frequency, data.order);
   });
 }
 
@@ -121,7 +123,8 @@ export async function getHabit(id: string): Promise<Habit | undefined> {
   const docSnap = await getDoc(docRef);
   if (docSnap.exists()) {
     const data = docSnap.data();
-    return new Habit(id, data.description, data.measureType, data.frequency);
+    const order = data.order || 0;
+    return new Habit(id, data.description, data.measureType, data.frequency, order);
   } else {
     return undefined;
   }
@@ -133,11 +136,21 @@ export async function addHabit(habit: Habit): Promise<Habit> {
     measureType: habit.measureType.toJSON(),
     target: habit.target.toJSON(),
   }).then(docRef => docRef.id)
-  return new Habit(docId, habit.description, habit.measureType, habit.target)
+  return new Habit(docId, habit.description, habit.measureType, habit.target, habit.order)
 }
 
 export async function deleteHabit(habitId: string): Promise<void> {
   return deleteDoc(doc(db, "habits", habitId))
+}
+
+export function updateHabitsOrder(habits: Habit[]) {
+  const length = habits.length
+  for (var i = 0; i < length; i++) {
+    const habit = habits[i]
+    const habitId = habit.id
+    const ref = doc(db, 'habits', habitId)
+    setDoc(ref, {order: habit.order}, { merge: true });
+  };
 }
 
 export async function updateMeasureValue(measure: Measure, value: number) {
