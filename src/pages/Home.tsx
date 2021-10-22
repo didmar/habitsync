@@ -21,7 +21,7 @@ import {
 } from '@ionic/react';
 import './Home.css';
 import {EditHabitModal} from "../components/EditHabitModal";
-import {add} from "ionicons/icons";
+import {add, reorderFourOutline} from "ionicons/icons";
 import { ItemReorderEventDetail } from '@ionic/core';
 
 const weekDays = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
@@ -31,6 +31,8 @@ const Home: React.FunctionComponent = () => {
     const [habits, setHabits] = useState<Habit[]>([]);
 
     const [dates, setDates] = useState<Date[]>([]);
+
+    const [reorderMode, setReorderMode] = useState<boolean>(false);
 
     // State to trigger the update of the measures in sub-components when refreshing
     const [refreshDate, setRefreshDate] = useState<number>(Date.now());
@@ -125,15 +127,17 @@ const Home: React.FunctionComponent = () => {
             <IonHeader>
                 <IonToolbar>
                     <IonRow class="ion-align-items-center">
-                        <IonCol size={"1"}>
+                        <IonCol size={parseInt(habitDescColSize).toString()}>
                             <IonButtons>
                                 <IonButton onClick={() => setHabitEditModal({ isOpen: true})}>
                                     <IonIcon icon={add}/>
                                 </IonButton>
+                                <IonButton onClick={() => setReorderMode(! reorderMode)}>
+                                    <IonIcon icon={reorderFourOutline}/>
+                                </IonButton>
+                                &ensp;
+                                <IonLabel>Habits</IonLabel>
                             </IonButtons>
-                        </IonCol>
-                        <IonCol size={(parseInt(habitDescColSize) - 1).toString()}>
-                            <IonTitle>Habits</IonTitle>
                         </IonCol>
                         {
                             dates.map(d =>
@@ -159,7 +163,7 @@ const Home: React.FunctionComponent = () => {
 
                 <IonList>
                     <span key={refreshDate}>
-                        <IonReorderGroup disabled={false} onIonItemReorder={doReorder}>
+                        <IonReorderGroup disabled={! reorderMode} onIonItemReorder={doReorder}>
                             {habits.map(h => <HabitListItem habit={h} dates={dates}/>)}
                         </IonReorderGroup>
                     </span>
